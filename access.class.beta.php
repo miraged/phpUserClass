@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * PHP Class to user access (login, register, logout, etc)
  * 
@@ -264,14 +264,12 @@ class flexibleAccess{
    */
   public function updateProperty($properties) {
     if(is_array($properties) && count($properties) > 0) {
-      $i=1;
-      $query = "UPDATE `".$this->dbTable."` SET ";
-      $c = count($properties);//a small optimization :)
+      $sql = array();
       foreach($properties AS $k => $v) {
         $v = ($k == $tbFields['pass']) ? $this->encode_password($v) : $v;
-        $query .= '`'.$this->escape($k)."` = '".$this->escape($v)."'".(($i++ < $c) ? ', ' : ' ');
+			$sql[] = '`'.$this->escape($k)."` = '".$this->escape($v)."'";
       }
-      $query .= "WHERE `".$this->tbFields['userID']."` = '".$this->userID."'";
+      $query = "UPDATE `".$this->dbTable."` SET ". implode(', ',$sql) ." WHERE `".$this->tbFields['userID']."` = '".$this->userID."'";
       return mysql_query($query, $this->dbConn); 
     }
     return $this->error('$properties should be a non empty array', __LINE__);
